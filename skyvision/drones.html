@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drones for Sale | SkyVision Drones</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo">SkyVision <span class="drone-icon">🛸</span></div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="features.html">Features</a></li>
+                <li><a href="drones.html">Drones</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="products" style="max-width: 1100px; margin: 2rem auto;">
+        <h2>Featured: HoloFlight™ Drones</h2>
+        <div class="product-grid">
+            <div class="product-card" style="border:2px solid #00b894;">
+                <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80" alt="HoloFlight Pro">
+                <h3>HoloFlight Pro</h3>
+                <p>Flagship drone with full 3D hologram projection, gesture & voice control, and 4K camera.</p>
+                <p class="price">$2,499</p>
+                <span style="color:#00b894;font-weight:bold;">Hologram Technology</span>
+                <button class="btn buy-btn">Buy Now</button>
+            </div>
+            <div class="product-card" style="border:2px solid #00b894;">
+                <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="HoloFlight Mini">
+                <h3>HoloFlight Mini</h3>
+                <p>Compact drone with holographic display, real-time data visualization, and obstacle avoidance.</p>
+                <p class="price">$1,299</p>
+                <span style="color:#00b894;font-weight:bold;">Hologram Technology</span>
+                <button class="btn buy-btn">Buy Now</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="products" style="max-width: 1100px; margin: 2rem auto;">
+        <h2>All Drones</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="SkyVision Pro">
+                <h3>SkyVision Pro</h3>
+                <p>Professional 4K drone with 3-axis gimbal and 40 min flight time.</p>
+                <p class="price">$999</p>
+                <button class="btn buy-btn">Buy Now</button>
+            </div>
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80" alt="SkyVision Mini">
+                <h3>SkyVision Mini</h3>
+                <p>Compact, lightweight, and perfect for beginners and travel.</p>
+                <p class="price">$499</p>
+                <button class="btn buy-btn">Buy Now</button>
+            </div>
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="SkyVision Surveyor">
+                <h3>SkyVision Surveyor</h3>
+                <p>Ideal for mapping, agriculture, and industrial inspections.</p>
+                <p class="price">$1,299</p>
+                <button class="btn buy-btn">Buy Now</button>
+            </div>
+            <div class="product-card" style="border:2px solid #00b894;">
+                <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80" alt="HoloFlight Pro">
+                <h3>HoloFlight Pro</h3>
+                <p>Flagship drone with full 3D hologram projection, gesture & voice control, and 4K camera.</p>
+                <p class="price">$2,499</p>
+                <span style="color:#00b894;font-weight:bold;">Hologram Technology</span>
+                <button class="btn buy-btn">Buy Now</button>
+            </div>
+            <div class="product-card" style="border:2px solid #00b894;">
+                <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="HoloFlight Mini">
+                <h3>HoloFlight Mini</h3>
+                <p>Compact drone with holographic display, real-time data visualization, and obstacle avoidance.</p>
+                <p class="price">$1,299</p>
+                <span style="color:#00b894;font-weight:bold;">Hologram Technology</span>
+                <button class="btn buy-btn">Buy Now</button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 SkyVision Drones. All rights reserved.</p>
+    </footer>
+    <script>
+    // Simple Buy Now button handler
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.buy-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                alert('Thank you for your interest! Online orders coming soon.');
+            });
+        });
+    });
+    </script>
+</body>
+</html>

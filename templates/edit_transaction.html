@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Transaction - Personal Finance Tracker{% endblock %}
+{% block page_title %}Edit Transaction{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-edit"></i> Edit Transaction</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">Amount *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.01" min="0" value="{{ transaction.amount }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="transaction_type" class="form-label">Type *</label>
+                            <select class="form-select" id="transaction_type" name="transaction_type" required>
+                                <option value="income" {% if transaction.transaction_type == 'income' %}selected{% endif %}>Income</option>
+                                <option value="expense" {% if transaction.transaction_type == 'expense' %}selected{% endif %}>Expense</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description *</label>
+                        <input type="text" class="form-control" id="description" name="description" 
+                               value="{{ transaction.description }}" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">Category *</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">Select category...</option>
+                                <optgroup label="Income Categories">
+                                    <option value="Salary" {% if transaction.category == 'Salary' %}selected{% endif %}>Salary</option>
+                                    <option value="Freelance" {% if transaction.category == 'Freelance' %}selected{% endif %}>Freelance</option>
+                                    <option value="Investment" {% if transaction.category == 'Investment' %}selected{% endif %}>Investment</option>
+                                    <option value="Business" {% if transaction.category == 'Business' %}selected{% endif %}>Business</option>
+                                    <option value="Other Income" {% if transaction.category == 'Other Income' %}selected{% endif %}>Other Income</option>
+                                </optgroup>
+                                <optgroup label="Expense Categories">
+                                    <option value="Food & Dining" {% if transaction.category == 'Food & Dining' %}selected{% endif %}>Food & Dining</option>
+                                    <option value="Transportation" {% if transaction.category == 'Transportation' %}selected{% endif %}>Transportation</option>
+                                    <option value="Housing" {% if transaction.category == 'Housing' %}selected{% endif %}>Housing</option>
+                                    <option value="Utilities" {% if transaction.category == 'Utilities' %}selected{% endif %}>Utilities</option>
+                                    <option value="Healthcare" {% if transaction.category == 'Healthcare' %}selected{% endif %}>Healthcare</option>
+                                    <option value="Entertainment" {% if transaction.category == 'Entertainment' %}selected{% endif %}>Entertainment</option>
+                                    <option value="Shopping" {% if transaction.category == 'Shopping' %}selected{% endif %}>Shopping</option>
+                                    <option value="Education" {% if transaction.category == 'Education' %}selected{% endif %}>Education</option>
+                                    <option value="Insurance" {% if transaction.category == 'Insurance' %}selected{% endif %}>Insurance</option>
+                                    <option value="Other Expenses" {% if transaction.category == 'Other Expenses' %}selected{% endif %}>Other Expenses</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date" class="form-label">Date *</label>
+                            <input type="date" class="form-control" id="date" name="date" 
+                                   value="{{ transaction.date.strftime('%Y-%m-%d') }}" required>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('transactions') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Transactions
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update Transaction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Update category options based on transaction type
+    document.getElementById('transaction_type').addEventListener('change', function() {
+        const categorySelect = document.getElementById('category');
+        const type = this.value;
+        
+        // Reset category selection
+        categorySelect.value = '';
+        
+        // Show/hide relevant category options
+        const options = categorySelect.options;
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            if (option.parentElement.tagName === 'OPTGROUP') {
+                const group = option.parentElement;
+                if (type === 'income' && group.label === 'Income Categories') {
+                    group.style.display = '';
+                    option.style.display = '';
+                } else if (type === 'expense' && group.label === 'Expense Categories') {
+                    group.style.display = '';
+                    option.style.display = '';
+                } else {
+                    group.style.display = 'none';
+                    option.style.display = 'none';
+                }
+            }
+        }
+    });
+    
+    // Trigger change event on page load to show correct categories
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('transaction_type').dispatchEvent(new Event('change'));
+    });
+</script>
+{% endblock %} 

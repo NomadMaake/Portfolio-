@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get a Quote - Elite Tiles & Construction</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Elite Tiles & Construction</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="quotes.html" class="active">Quotes</a></li>
+            </ul>
+            <div class="hamburger">☰</div>
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Get a Quote</h1>
+                <p>Enter your room dimensions and material to estimate your project cost in rands.</p>
+            </div>
+            <div class="hero-image">
+                <img src="pictures/image-9.jpg" alt="Quote Image">
+            </div>
+        </section>
+        <section class="contact">
+            <form id="quote-form">
+                <label for="room-type">Room Type:</label>
+                <select id="room-type" required>
+                    <option value="house">Whole House</option>
+                    <option value="bedroom">Bedroom</option>
+                    <option value="bathroom">Bathroom</option>
+                </select>
+                <label for="length">Length (meters):</label>
+                <input type="number" id="length" min="1" step="0.01" required>
+                <label for="width">Width (meters):</label>
+                <input type="number" id="width" min="1" step="0.01" required>
+                <label for="material">Material:</label>
+                <select id="material" required>
+                    <option value="ceramic">Ceramic (R200/m²)</option>
+                    <option value="porcelain">Porcelain (R300/m²)</option>
+                    <option value="marble">Marble (R600/m²)</option>
+                    <option value="vinyl">Vinyl (R150/m²)</option>
+                </select>
+                <button type="submit">Calculate Quote</button>
+            </form>
+            <div id="quote-result" style="margin-top: 24px; font-size: 1.2rem; font-weight: 600; color: #0077b6;"></div>
+        </section>
+    </main>
+    <footer>
+        <div class="footer-menu">
+            <a href="index.html">Home</a> |
+            <a href="about.html">About</a> |
+            <a href="services.html">Services</a> |
+            <a href="products.html">Products</a> |
+            <a href="contact.html">Contact</a> |
+            <a href="quotes.html">Quotes</a>
+        </div>
+        <p class="footer-copy">&copy; 2025 Elite Tiles & Construction. All rights reserved.</p>
+    </footer>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('quote-form');
+        const result = document.getElementById('quote-result');
+        const materialPrices = {
+            ceramic: 200,
+            porcelain: 300,
+            marble: 600,
+            vinyl: 150
+        };
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const length = parseFloat(document.getElementById('length').value);
+            const width = parseFloat(document.getElementById('width').value);
+            const material = document.getElementById('material').value;
+            if (isNaN(length) || isNaN(width) || length <= 0 || width <= 0) {
+                result.textContent = 'Please enter valid dimensions.';
+                return;
+            }
+            const area = length * width;
+            const pricePerSqM = materialPrices[material];
+            let multiplier = 1;
+            const roomType = document.getElementById('room-type').value;
+            if (roomType === 'bathroom') multiplier = 1.15; // bathrooms are more complex
+            if (roomType === 'bedroom') multiplier = 1;
+            if (roomType === 'house') multiplier = 0.95; // discount for whole house
+            const total = Math.round(area * pricePerSqM * multiplier);
+            result.textContent = `Estimated Cost: R${total.toLocaleString()} for ${area.toFixed(2)} m² (${roomType}, ${material.charAt(0).toUpperCase() + material.slice(1)})`;
+        });
+    });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html> 

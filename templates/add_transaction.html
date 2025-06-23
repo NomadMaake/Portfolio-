@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Add Transaction - Personal Finance Tracker{% endblock %}
+{% block page_title %}Add Transaction{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-plus"></i> Add New Transaction</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">Amount *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="transaction_type" class="form-label">Type *</label>
+                            <select class="form-select" id="transaction_type" name="transaction_type" required>
+                                <option value="">Select type...</option>
+                                <option value="income">Income</option>
+                                <option value="expense">Expense</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description *</label>
+                        <input type="text" class="form-control" id="description" name="description" 
+                               placeholder="e.g., Grocery shopping, Salary payment" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">Category *</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">Select category...</option>
+                                <optgroup label="Income Categories">
+                                    <option value="Salary">Salary</option>
+                                    <option value="Freelance">Freelance</option>
+                                    <option value="Investment">Investment</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Other Income">Other Income</option>
+                                </optgroup>
+                                <optgroup label="Expense Categories">
+                                    <option value="Food & Dining">Food & Dining</option>
+                                    <option value="Transportation">Transportation</option>
+                                    <option value="Housing">Housing</option>
+                                    <option value="Utilities">Utilities</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Insurance">Insurance</option>
+                                    <option value="Other Expenses">Other Expenses</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date" class="form-label">Date *</label>
+                            <input type="date" class="form-control" id="date" name="date" 
+                                   value="{{ today }}" required>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('transactions') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Transactions
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Transaction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set today's date as default
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    
+    // Update category options based on transaction type
+    document.getElementById('transaction_type').addEventListener('change', function() {
+        const categorySelect = document.getElementById('category');
+        const type = this.value;
+        
+        // Reset category selection
+        categorySelect.value = '';
+        
+        // Show/hide relevant category options
+        const options = categorySelect.options;
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            if (option.parentElement.tagName === 'OPTGROUP') {
+                const group = option.parentElement;
+                if (type === 'income' && group.label === 'Income Categories') {
+                    group.style.display = '';
+                    option.style.display = '';
+                } else if (type === 'expense' && group.label === 'Expense Categories') {
+                    group.style.display = '';
+                    option.style.display = '';
+                } else {
+                    group.style.display = 'none';
+                    option.style.display = 'none';
+                }
+            }
+        }
+    });
+</script>
+{% endblock %} 

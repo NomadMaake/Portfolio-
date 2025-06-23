@@ -1,6 +1,6 @@
-# 💰 Personal Finance Tracker
+# 💰 Finance Tracker
 
-A modern, interactive Personal Finance Tracker built with **Streamlit** that helps you manage your income, expenses, budgets, and financial goals with beautiful visualizations and real-time insights.
+A modern, interactive Finance Tracker built with **Streamlit** that helps you manage your income, expenses, budgets, and financial goals with beautiful visualizations and real-time insights.
 
 ![Finance Tracker](https://img.shields.io/badge/Streamlit-1.46.0-red)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
@@ -48,8 +48,8 @@ A modern, interactive Personal Finance Tracker built with **Streamlit** that hel
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/personal-finance-tracker.git
-   cd personal-finance-tracker
+   git clone https://github.com/yourusername/finance-tracker.git
+   cd finance-tracker
    ```
 
 2. **Create a virtual environment**
@@ -128,7 +128,7 @@ A modern, interactive Personal Finance Tracker built with **Streamlit** that hel
 ## 📁 Project Structure
 
 ```
-personal-finance-tracker/
+finance-tracker/
 ├── streamlit_app.py          # Main application file
 ├── requirements.txt          # Python dependencies
 ├── README.md                # Project documentation
@@ -218,7 +218,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 If you encounter any issues or have questions:
-1. Check the [Issues](https://github.com/yourusername/personal-finance-tracker/issues) page
+1. Check the [Issues](https://github.com/yourusername/finance-tracker/issues) page
 2. Create a new issue with detailed information
 3. Contact the maintainers
 

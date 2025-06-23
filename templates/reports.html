@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Personal Finance Tracker{% endblock %}
+{% block page_title %}Reports & Analytics{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group" role="group">
+    <a href="{{ url_for('export_csv') }}" class="btn btn-outline-success">
+        <i class="fas fa-download"></i> Export CSV
+    </a>
+    <a href="{{ url_for('export_pdf') }}" class="btn btn-outline-danger">
+        <i class="fas fa-file-pdf"></i> Export PDF
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Spending by Category Chart -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Spending by Category</h5>
+            </div>
+            <div class="card-body">
+                <div id="spendingChart" style="height: 400px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Trends Chart -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Monthly Income vs Expenses</h5>
+            </div>
+            <div class="card-body">
+                <div id="trendsChart" style="height: 400px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Financial Summary -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-calculator"></i> Financial Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="border-end">
+                            <h4 class="text-success">$0.00</h4>
+                            <small class="text-muted">Total Income</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h4 class="text-danger">$0.00</h4>
+                        <small class="text-muted">Total Expenses</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-primary">$0.00</h4>
+                        <small class="text-muted">Net Income</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-info">0</h4>
+                        <small class="text-muted">Transactions</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Spending Categories -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-list-ol"></i> Top Spending Categories</h5>
+            </div>
+            <div class="card-body">
+                <div id="topCategories">
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No spending data available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget vs Actual -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-target"></i> Budget vs Actual</h5>
+            </div>
+            <div class="card-body">
+                <div id="budgetComparison">
+                    <div class="text-center py-4">
+                        <i class="fas fa-target fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No budget data available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Options -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-download"></i> Export Your Data</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-csv fa-3x text-primary mb-3"></i>
+                                <h5>Export to CSV</h5>
+                                <p class="text-muted">Download your transaction data in CSV format for analysis in Excel or other spreadsheet applications.</p>
+                                <a href="{{ url_for('export_csv') }}" class="btn btn-primary">
+                                    <i class="fas fa-download"></i> Download CSV
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-danger">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                                <h5>Export to PDF</h5>
+                                <p class="text-muted">Generate a professional PDF report with your financial summary and transaction history.</p>
+                                <a href="{{ url_for('export_pdf') }}" class="btn btn-danger">
+                                    <i class="fas fa-file-pdf"></i> Generate PDF
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadSpendingChart();
+    loadTrendsChart();
+});
+
+function loadSpendingChart() {
+    fetch('/api/spending_by_category')
+        .then(response => response.json())
+        .then(data => {
+            if (data.data && data.data.length > 0) {
+                Plotly.newPlot('spendingChart', data.data, data.layout);
+            } else {
+                document.getElementById('spendingChart').innerHTML = 
+                    '<div class="text-center py-4"><i class="fas fa-chart-pie fa-3x text-muted mb-3"></i><p class="text-muted">No spending data available</p></div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading spending chart:', error);
+            document.getElementById('spendingChart').innerHTML = 
+                '<div class="text-center py-4"><i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i><p class="text-muted">Error loading chart</p></div>';
+        });
+}
+
+function loadTrendsChart() {
+    fetch('/api/monthly_trends')
+        .then(response => response.json())
+        .then(data => {
+            if (data.data && data.data.length > 0) {
+                Plotly.newPlot('trendsChart', data.data, data.layout);
+            } else {
+                document.getElementById('trendsChart').innerHTML = 
+                    '<div class="text-center py-4"><i class="fas fa-chart-bar fa-3x text-muted mb-3"></i><p class="text-muted">No trend data available</p></div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading trends chart:', error);
+            document.getElementById('trendsChart').innerHTML = 
+                '<div class="text-center py-4"><i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i><p class="text-muted">Error loading chart</p></div>';
+        });
+}
+</script>
+{% endblock %} 

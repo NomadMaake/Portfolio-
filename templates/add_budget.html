@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Add Budget - Personal Finance Tracker{% endblock %}
+{% block page_title %}Add Budget{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-plus"></i> Add New Budget</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">Category *</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">Select category...</option>
+                                <option value="Food & Dining">Food & Dining</option>
+                                <option value="Transportation">Transportation</option>
+                                <option value="Housing">Housing</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Education">Education</option>
+                                <option value="Insurance">Insurance</option>
+                                <option value="Other Expenses">Other Expenses</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">Budget Amount *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.01" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="month" class="form-label">Month *</label>
+                        <input type="month" class="form-control" id="month" name="month" 
+                               value="{{ current_month }}" required>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Tip:</strong> Set realistic budget amounts based on your income and spending patterns. 
+                        You can always adjust your budgets later.
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('budgets') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Budgets
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Budget
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Budget Guidelines -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-line"></i> Budget Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>50/30/20 Rule:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>50% - Needs:</strong> Housing, food, utilities, transportation</li>
+                            <li><strong>30% - Wants:</strong> Entertainment, shopping, dining out</li>
+                            <li><strong>20% - Savings:</strong> Emergency fund, investments, debt repayment</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Suggested Percentages:</h6>
+                        <ul class="list-unstyled">
+                            <li>Housing: 25-30%</li>
+                            <li>Food & Dining: 10-15%</li>
+                            <li>Transportation: 10-15%</li>
+                            <li>Utilities: 5-10%</li>
+                            <li>Healthcare: 5-10%</li>
+                            <li>Entertainment: 5-10%</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set current month as default
+    document.getElementById('month').value = new Date().toISOString().slice(0, 7);
+</script>
+{% endblock %} 

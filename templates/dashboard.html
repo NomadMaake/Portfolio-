@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Personal Finance Tracker{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Financial Overview Cards -->
+<div class="row mb-5">
+    <div class="col-md-4 mb-4">
+        <div class="stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-arrow-up"></i>
+                <h3>${{ "%.2f"|format(total_income) }}</h3>
+                <p class="mb-0">Total Income</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-arrow-down"></i>
+                <h3>${{ "%.2f"|format(total_expenses) }}</h3>
+                <p class="mb-0">Total Expenses</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-wallet"></i>
+                <h3 class="{% if net_income >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    ${{ "%.2f"|format(net_income) }}
+                </h3>
+                <p class="mb-0">Net Income</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Transactions -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i> Recent Transactions
+                </h5>
+                <a href="{{ url_for('transactions') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-external-link-alt me-1"></i>View All
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_transactions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in recent_transactions %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-gradient rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                <i class="fas fa-calendar text-white" style="font-size: 0.8rem;"></i>
+                                            </div>
+                                            {{ transaction.date.strftime('%Y-%m-%d') }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">{{ transaction.description }}</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ transaction.category }}</span>
+                                    </td>
+                                    <td>
+                                        {% if transaction.transaction_type == 'income' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-arrow-up me-1"></i>Income
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-arrow-down me-1"></i>Expense
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="{% if transaction.transaction_type == 'income' %}text-success{% else %}text-danger{% endif %} fw-bold">
+                                        ${{ "%.2f"|format(transaction.amount) }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="bg-light bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px;">
+                            <i class="fas fa-inbox fa-3x text-muted"></i>
+                        </div>
+                        <h4 class="text-muted mb-3">No transactions yet</h4>
+                        <p class="text-muted mb-4">Start tracking your finances by adding your first transaction.</p>
+                        <a href="{{ url_for('add_transaction') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-plus me-2"></i>Add Your First Transaction
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Status -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i> Budget Status
+                </h5>
+                <a href="{{ url_for('budgets') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-cog me-1"></i>Manage
+                </a>
+            </div>
+            <div class="card-body">
+                {% if budgets %}
+                    {% for budget in budgets %}
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold">{{ budget.category }}</span>
+                            <span class="text-muted">${{ "%.2f"|format(budget.amount) }}</span>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar" style="width: 75%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">75% used</small>
+                            <small class="text-success">${{ "%.2f"|format(budget.amount * 0.25) }} remaining</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <div class="bg-light bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-chart-pie fa-2x text-muted"></i>
+                        </div>
+                        <h5 class="text-muted mb-2">No budgets set</h5>
+                        <p class="text-muted mb-3">Set up budgets to track your spending and stay on top of your finances.</p>
+                        <a href="{{ url_for('budgets') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-plus me-2"></i>Set Up Budgets
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i> Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <a href="{{ url_for('add_transaction') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i> Add Transaction
+                    </a>
+                    <a href="{{ url_for('budgets') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-chart-pie me-2"></i> Set Budget
+                    </a>
+                    <a href="{{ url_for('reports') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-chart-bar me-2"></i> View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Tips -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i> Financial Tips
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-start mb-3">
+                    <div class="bg-success bg-gradient rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 24px; height: 24px;">
+                        <i class="fas fa-check text-white" style="font-size: 0.7rem;"></i>
+                    </div>
+                    <small class="text-muted">Track every expense, no matter how small</small>
+                </div>
+                <div class="d-flex align-items-start mb-3">
+                    <div class="bg-success bg-gradient rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 24px; height: 24px;">
+                        <i class="fas fa-check text-white" style="font-size: 0.7rem;"></i>
+                    </div>
+                    <small class="text-muted">Set realistic budgets for each category</small>
+                </div>
+                <div class="d-flex align-items-start">
+                    <div class="bg-success bg-gradient rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 24px; height: 24px;">
+                        <i class="fas fa-check text-white" style="font-size: 0.7rem;"></i>
+                    </div>
+                    <small class="text-muted">Review your spending patterns regularly</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Monthly Overview -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-alt me-2"></i> This Month's Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-calendar-day fa-2x text-white"></i>
+                        </div>
+                        <h4 class="fw-bold">{{ today.strftime('%B') }}</h4>
+                        <p class="text-muted mb-0">Current Month</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-arrow-up fa-2x text-white"></i>
+                        </div>
+                        <h4 class="fw-bold text-success">${{ "%.2f"|format(total_income) }}</h4>
+                        <p class="text-muted mb-0">Total Income</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="bg-danger bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-arrow-down fa-2x text-white"></i>
+                        </div>
+                        <h4 class="fw-bold text-danger">${{ "%.2f"|format(total_expenses) }}</h4>
+                        <p class="text-muted mb-0">Total Expenses</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-percentage fa-2x text-white"></i>
+                        </div>
+                        <h4 class="fw-bold text-info">
+                            {% if total_income > 0 %}
+                                {{ "%.1f"|format((total_expenses / total_income) * 100) }}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        </h4>
+                        <p class="text-muted mb-0">Expense Ratio</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
