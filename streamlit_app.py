@@ -6,6 +6,12 @@ import sqlite3
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib import colors
+import io
 
 load_dotenv()
 
@@ -214,7 +220,8 @@ if page == "Dashboard":
             transactions_df['date'] = pd.to_datetime(transactions_df['date'])
             transactions_df['month'] = transactions_df['date'].dt.to_period('M')
             monthly_data = transactions_df.groupby(['month', 'transaction_type'])['amount'].sum().reset_index()
-            
+            # Convert Period to string for Plotly
+            monthly_data['month'] = monthly_data['month'].astype(str)
             if not monthly_data.empty:
                 fig_monthly = px.bar(monthly_data, x='month', y='amount', color='transaction_type',
                                    title="Monthly Income vs Expenses", barmode='group')
@@ -518,7 +525,8 @@ elif page == "Reports":
                 monthly_data = filtered_df.groupby(['date', 'transaction_type'])['amount'].sum().reset_index()
                 monthly_data['month'] = monthly_data['date'].dt.to_period('M')
                 monthly_summary = monthly_data.groupby(['month', 'transaction_type'])['amount'].sum().reset_index()
-                
+                # Convert Period to string for Plotly
+                monthly_summary['month'] = monthly_summary['month'].astype(str)
                 if not monthly_summary.empty:
                     fig_monthly = px.bar(monthly_summary, x='month', y='amount', color='transaction_type',
                                        title="Monthly Income vs Expenses", barmode='group')
@@ -561,4 +569,93 @@ elif page == "Reports":
             st.info(f"No data available for {period}")
     
     else:
-        st.info("No transactions found. Add some transactions to generate reports!") 
+        st.info("No transactions found. Add some transactions to generate reports!")
+
+def export_to_csv(data, filename):
+    csv = data.to_csv(index=False)
+    return csv
+
+def export_to_excel(data, filename):
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        data.to_excel(writer, sheet_name='Transactions', index=False)
+    output.seek(0)
+    return output
+
+def export_to_pdf(data, filename, period):
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=16,
+        spaceAfter=30,
+        alignment=1
+    )
+    
+    elements.append(Paragraph(f"Finance Tracker Report - {period}", title_style))
+    elements.append(Spacer(1, 20))
+    
+    if not data.empty:
+        elements.append(Paragraph("Transaction Summary", styles['Heading2']))
+        elements.append(Spacer(1, 12))
+        
+        total_income = data[data['transaction_type'] == 'income']['amount'].sum()
+        total_expenses = data[data['transaction_type'] == 'expense']['amount'].sum()
+        net_income = total_income - total_expenses
+        
+        summary_data = [
+            ['Metric', 'Amount (R)'],
+            ['Total Income', f'R{total_income:,.2f}'],
+            ['Total Expenses', f'R{total_expenses:,.2f}'],
+            ['Net Income', f'R{net_income:,.2f}'],
+            ['Total Transactions', str(len(data))]
+        ]
+        
+        summary_table = Table(summary_data)
+        summary_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+        ]))
+        elements.append(summary_table)
+        elements.append(Spacer(1, 20))
+        
+        elements.append(Paragraph("Transaction Details", styles['Heading2']))
+        elements.append(Spacer(1, 12))
+        
+        pdf_data = [['Date', 'Description', 'Category', 'Type', 'Amount (R)']]
+        for _, row in data.iterrows():
+            pdf_data.append([
+                row['date'],
+                row['description'][:30] + '...' if len(row['description']) > 30 else row['description'],
+                row['category'],
+                row['transaction_type'].title(),
+                f"R{row['amount']:,.2f}"
+            ])
+        
+        pdf_table = Table(pdf_data)
+        pdf_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('FONTSIZE', (0, 1), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+        ]))
+        elements.append(pdf_table)
+    
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer 
