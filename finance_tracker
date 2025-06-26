@@ -1,0 +1,4 @@
+<script>start("/Users/outlands/Desktop/Github/finance_tracker/");</script>
+<script>onHasParentDirectory();</script>
+<script>addRow("requirements.txt","requirements.txt",0,76,"76 B",1750924005,"26/06/2025, 09:46:45");</script>
+<script>addRow("streamlit_app.py","streamlit_app.py",0,22861,"22.3 kB",1750924844,"26/06/2025, 10:00:44");</script>
