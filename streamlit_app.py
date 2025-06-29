@@ -262,7 +262,7 @@ elif page == "Add Transaction":
         col1, col2 = st.columns(2)
         
         with col1:
-            amount = st.number_input("Amount (R)", min_value=0.01, step=0.01)
+            amount_input = st.text_input("Amount (R)", placeholder="0.00", help="Enter amount in Rands (e.g., 150.50)")
             transaction_type = st.selectbox("Type", ["expense", "income"])
         
         with col2:
@@ -278,16 +278,26 @@ elif page == "Add Transaction":
         
         submitted = st.form_submit_button("Add Transaction")
         
-        if submitted and amount and description:
-            conn = get_connection()
-            c = conn.cursor()
-            c.execute("""
-                INSERT INTO transactions (amount, description, category, transaction_type, date)
-                VALUES (?, ?, ?, ?, ?)
-            """, (amount, description, category, transaction_type, date.strftime('%Y-%m-%d')))
-            conn.commit()
-            conn.close()
-            st.success("Transaction added successfully!")
+        if submitted:
+            # Validate amount input
+            try:
+                amount = float(amount_input) if amount_input else 0
+                if amount <= 0:
+                    st.error("Please enter a valid amount greater than 0")
+                elif not description:
+                    st.error("Please enter a description")
+                else:
+                    conn = get_connection()
+                    c = conn.cursor()
+                    c.execute("""
+                        INSERT INTO transactions (amount, description, category, transaction_type, date)
+                        VALUES (?, ?, ?, ?, ?)
+                    """, (amount, description, category, transaction_type, date.strftime('%Y-%m-%d')))
+                    conn.commit()
+                    conn.close()
+                    st.success("Transaction added successfully!")
+            except ValueError:
+                st.error("Please enter a valid number for the amount")
 
 # View Transactions page
 elif page == "View Transactions":
@@ -420,21 +430,29 @@ elif page == "Budgets":
                 "Food & Dining", "Transportation", "Housing", "Utilities", 
                 "Healthcare", "Entertainment", "Shopping", "Education", "Insurance"
             ])
-            amount = st.number_input("Monthly Budget (R)", min_value=0.01, step=0.01)
+            budget_amount_input = st.text_input("Monthly Budget (R)", placeholder="0.00", help="Enter budget amount in Rands (e.g., 1000.00)")
             month = st.date_input("Month", value=datetime.now()).strftime('%Y-%m')
             
             submitted = st.form_submit_button("Add Budget")
             
-            if submitted and amount:
-                conn = get_connection()
-                c = conn.cursor()
-                c.execute("""
-                    INSERT OR REPLACE INTO budgets (category, amount, month)
-                    VALUES (?, ?, ?)
-                """, (category, amount, month))
-                conn.commit()
-                conn.close()
-                st.success("Budget added successfully!")
+            if submitted:
+                # Validate budget amount input
+                try:
+                    amount = float(budget_amount_input) if budget_amount_input else 0
+                    if amount <= 0:
+                        st.error("Please enter a valid budget amount greater than 0")
+                    else:
+                        conn = get_connection()
+                        c = conn.cursor()
+                        c.execute("""
+                            INSERT OR REPLACE INTO budgets (category, amount, month)
+                            VALUES (?, ?, ?)
+                        """, (category, amount, month))
+                        conn.commit()
+                        conn.close()
+                        st.success("Budget added successfully!")
+                except ValueError:
+                    st.error("Please enter a valid number for the budget amount")
 
 # Reports page
 elif page == "Reports":
